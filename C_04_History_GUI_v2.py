@@ -1,7 +1,9 @@
-from idlelib.history import History
+# from idlelib.history import History
 from tkinter import *
 from functools import partial # To prevent unwanted windows
 import all_constants as c
+# from C_05_list_reversal import newest_first
+
 
 class Converter():
     """
@@ -13,11 +15,15 @@ class Converter():
         """
         Temperature Converter GUI
         """
+        #
+        # self.all_calculations_list = ['10.0 °F is -12°C', '20.0 °F is -7°C',
+        #                                '30.0 °F is -1°C', '40.0 °F is 4°C',
+        #                                '50.0 °F is 10°C', '60.0 °F is 16°C']
 
-        self.all_calculations_list = [['10.0 °F is -12°C', '20.0 °F is -7°C',
+        self.all_calculations_list = ['10.0 °F is -12°C', '20.0 °F is -7°C',
                                        '30.0 °F is -1°C', '40.0 °F is 4°C',
-                                       '50.0 °F is 10°C', '60.0 °F is 16°C']
-]
+                                       '50.0 °F is 10°C']
+
 
         self.temp_frame = Frame(padx=10, pady=10)
         self.temp_frame.grid()
@@ -26,7 +32,7 @@ class Converter():
                                         text="History / Export",
                                         bg="#CC6600",
                                         fg="#FFFFFF",
-                                        font=("Arial", "14", "bold"), width=12,
+                                        font=("Arial", 14, "bold"), width=12,
                                         command=self.to_history)
         self.to_history_button.grid(row=1, padx=5, pady=5)
 
@@ -35,7 +41,7 @@ class Converter():
         Opens History dialogue box and disables history button
         (so that users can't create multiple history boxes)
         """
-        HistoryExport(self,self.all_calculations_list)
+        HistoryExport(self, self.all_calculations_list)
 
 class HistoryExport:
     """
@@ -43,7 +49,7 @@ class HistoryExport:
     """
 
     def __init__(self, partner, calculations):
-       
+
         self.history_box = Toplevel()
 
         # disable history button
@@ -69,16 +75,32 @@ class HistoryExport:
         recent_info_txt = (f"Below are {calc_amount} calculations "
                            f"(to the nearest degree).")
 
+        # Create string from calculations list (newest calculations first)
+        newest_first_string = ""
+        newest_first_list = list(reversed(calculations))
+
+        if len(newest_first_list) <= c.MAX_CALCS:
+            for item in newest_first_list[:-1]:
+                newest_first_string += item + "\n"
+
+            newest_first_string += newest_first_list[-1]
+
+        # if we have more than five items...
+        else:
+            for item in newest_first_list[:c.MAX_CALCS-1]:
+                newest_first_string += item + "\n"
+
+
+            newest_first_string += newest_first_list[c.MAX_CALCS-1]
+
         export_instruction_txt = ("Please push <Export> to save you calculation in a text "
                                   "file. the filename already exists, it will be overwritten!")
-
-        calculations = ""
 
         # Label list (label text | format | bg)
         history_labels_list = [
             ["History / Export", ("Arial", "16", "bold"), None],
             [recent_info_txt, ("Arial", "11"), None],
-            ["calculation list", ("Arial", "14"), calc_back],
+            [newest_first_string, ("Arial", "14"), calc_back],
             [export_instruction_txt,("Arial", "11"), None]
         ]
 
@@ -109,7 +131,7 @@ class HistoryExport:
 
         for btn in button_details_list:
             self.make_button = Button(self.hist_button_frame,
-                                      font=("Arial", "12", "bold"),
+                                      font=("Arial", 12, "bold"),
                                       text=btn[0], bg=btn[1],
                                       fg="#ffffff", width=12,
                                       command=btn[2])
